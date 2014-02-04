@@ -1,6 +1,6 @@
 // var hardware = require('hardware');
 var tessel = require('tessel');
-console.log("Connecting to acceleroemter on port bank A");
+console.log("Connecting to accelerometer on port bank A");
 var accel = require('../').connect(tessel.port("A"));
 
 // Initialize the accelerometer.
