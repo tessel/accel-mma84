@@ -1,12 +1,17 @@
 #Accelerometer
 Driver for the accel-mma84 Tessel accelerometer module ([MMA8452Q](http://www.freescale.com/files/sensors/doc/data_sheet/MMA8452Q.pdf)).
 
+##Installation
+```sh
+npm install accel-mma84
+```
+
 ##Example
 ```js
 // var hardware = require('hardware');
 var tessel = require('tessel');
 console.log("Connecting to accelerometer on port bank A");
-var accel = require('../').connect(tessel.port("A"));
+var accel = require('accel-mma84').connect(tessel.port("A"));
 
 // Initialize the accelerometer.
 accel.on('connected', function () {
@@ -19,16 +24,6 @@ accel.on('connected', function () {
     });
   }, 100);
 });
-```
-
-##Installation
-```sh
-npm install accel-mma84
-```
-
-##Import
-```js
-var accel = require('accel-mma84').connect(myhardwareapi);
 ```
 
 ##Methods
