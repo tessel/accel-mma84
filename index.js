@@ -53,10 +53,19 @@ function Accelerometer (hardware)
         // The default data rate is 800Hz and we don't modify it in this example code
         self.modeActive(function () {
           self.emit('connected');
+
+          // Loop forever so that everything is event driven
+          setInterval (function () {
+            self.getAcceleration(function (err, xyz) {
+              if (err) throw err;
+              self.emit('data', xyz);
+            });
+          }, 100);
+
         });  // Set to active to start reading
       });
     });
-  })
+  });
 }
 
 util.inherits(Accelerometer, EventEmitter)
