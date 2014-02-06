@@ -30,7 +30,10 @@ function Accelerometer (hardware)
 {
   var self = this;
 
-  this.hardware = hardware;
+  self.hardware = hardware;
+  self.numListeners = 0;
+  self.listening = false;
+  self.pollFrequency = 100;
 
   self.i2c = new hardware.I2C(I2C_ADDRESS);
   self.i2c.initialize();
@@ -53,17 +56,32 @@ function Accelerometer (hardware)
         // The default data rate is 800Hz and we don't modify it in this example code
         self.modeActive(function () {
           self.emit('connected');
-
-          // Loop forever so that everything is event driven
-          setInterval (function () {
-            self.getAcceleration(function (err, xyz) {
-              if (err) throw err;
-              self.emit('data', xyz);
-            });
-          }, 100);
-
         });  // Set to active to start reading
       });
+    });
+    // If we get a new listener
+    self.on('newListener', function(event) {
+      if (event == "data") {
+        // Add to the number of things listening
+        self.numListeners += 1;
+        // If we're not already listening
+        if (!self.listening) {
+          // Start listening
+          self.setListening();
+        }
+      }
+    });
+
+    // If we remove a listener
+    self.on('removeListener', function(event) {
+      if (event == "data") {
+        // Remove from the number of things listening
+        self.numListeners -= 1;
+        // Because we listen in a while loop, if this.listening goes to 0, we'll stop listening automatically
+        if (self.numListeners < 1) {
+          self.listening = 0;
+        }
+      }
     });
   });
 }
@@ -86,6 +104,22 @@ Accelerometer.prototype._readRegister = function (addressToRead, next)
 Accelerometer.prototype._writeRegister = function (addressToWrite, dataToWrite, next)
 {
   this.i2c.send([addressToWrite, dataToWrite], next);
+}
+
+Accelerometer.prototype.setListening = function () {
+  var self = this;
+  self.listening = true;
+  // Loop until nothing is listening
+  var listeningLoop = setInterval (function () {
+    if (self.numListeners) {
+      self.getAcceleration(function (err, xyz) {
+        if (err) throw err;
+        self.emit('data', xyz);
+      });
+    } else {
+      clearInterval(listeningLoop);
+    }
+  }, self.pollFrequency);
 }
 
 // Sets the MMA8452 to standby mode. It must be in standby to change most register settings
@@ -112,6 +146,7 @@ Accelerometer.prototype.getAcceleration = function (next)
 {
   var self = this;
   self._readRegisters(OUT_X_MSB, 6, function (err, rawData) {
+    if (err) throw err;
     // Loop to calculate 12-bit ADC and g value for each axis
     var out = [];
     for (var i = 0; i < 3 ; i++) {
