@@ -110,7 +110,7 @@ Accelerometer.prototype.setListening = function () {
   var self = this;
   self.listening = true;
   // Loop until nothing is listening
-  var listeningLoop = setInterval (function () {
+  self.listeningLoop = setInterval (function () {
     if (self.numListeners) {
       self.getAcceleration(function (err, xyz) {
         if (err) throw err;
@@ -164,6 +164,16 @@ Accelerometer.prototype.getAcceleration = function (next)
 
     next(null, out);
   });
+}
+
+// Sets the polling frequency for streamed data (default 100ms)
+Accelerometer.prototype.setPollFrequency = function (milliseconds) {
+  var self = this;
+  self.pollFrequency = milliseconds;
+  if (self.listening) {
+    clearInterval(self.listeningLoop);
+    self.setListening();
+  }
 }
 
 exports.Accelerometer = Accelerometer;

@@ -11,8 +11,18 @@ accel.on('connected', function () {
       "y:", xyz[1].toFixed(2),
       "z:", xyz[2].toFixed(2));
 	});
-	//After three seconds, stop streaming
+	//After two seconds, stop streaming
 	setTimeout(function () {
 		accel.removeListener('data');
-	}, 3000);
+
+		//After two more seconds, change stream rate, then stream again
+		setTimeout(function () {
+			accel.setPollFrequency(1000); // every 1 second (default is 10x/second)
+			accel.on('data', function (xyz) {
+				console.log("x:", xyz[0].toFixed(2),
+		      "y:", xyz[1].toFixed(2),
+		      "z:", xyz[2].toFixed(2));
+			});
+		}, 2000);
+	}, 2000);
 });
