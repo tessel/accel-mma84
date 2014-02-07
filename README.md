@@ -32,6 +32,12 @@ accel.on('connected', function () {
 
 *  **`accel`.getAcceleration(callback(err, xyz))**
 
+##Events
+
+* *connected*
+
+* *data*
+
 ##Further Examples
 
 * [Average (more advanced use)](https://github.com/tessel/modules/blob/master/accel-mma84/examples/average.js)
