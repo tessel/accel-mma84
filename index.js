@@ -76,12 +76,20 @@ function Accelerometer (hardware)
     self.on('removeListener', function(event) {
       if (event == "data") {
         // Remove from the number of things listening
+        console.log('prev listeners', self.numListeners);
         self.numListeners -= 1;
+        console.log('now', self.numListeners);
         // Because we listen in a while loop, if this.listening goes to 0, we'll stop listening automatically
         if (self.numListeners < 1) {
           self.listening = 0;
         }
       }
+    });
+
+    // If all listeners removed
+    self.on('removeAllListeners', function(event) {
+      self.numListeners = 0;
+      self.listening = 0;
     });
   });
 }

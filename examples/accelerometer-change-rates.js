@@ -19,17 +19,18 @@ accel.on('connected', function () {
 	//After two seconds, stop streaming
 	setTimeout(function () {
 		console.log('Stopping stream')
-		accel.removeListener('data');
-
-		//After two more seconds, change stream rate, then stream again
-		setTimeout(function () {
-			console.log('Changing poll frequency')
-			accel.setPollFrequency(1000); // every 1 second (default is 10x/second)
-			accel.on('data', function (xyz) {
-				console.log("x:", xyz[0].toFixed(2),
-		      "y:", xyz[1].toFixed(2),
-		      "z:", xyz[2].toFixed(2));
-			});
-		}, 2000);
+		accel.removeAllListeners('data', function () {
+			console.log('listener removed')
+			//After two more seconds, change stream rate, then stream again
+			setTimeout(function () {
+				console.log('Changing poll frequency')
+				accel.setPollFrequency(1000); // every 1 second (default is 10x/second)
+				accel.on('data', function (xyz) {
+					console.log("x:", xyz[0].toFixed(2),
+			      "y:", xyz[1].toFixed(2),
+			      "z:", xyz[2].toFixed(2));
+				});
+			}, 2000);
+		});
 	}, 2000);
 });
