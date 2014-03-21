@@ -36,7 +36,6 @@ function Accelerometer (hardware)
   self.pollFrequency = 100;
 
   self.i2c = new hardware.I2C(I2C_ADDRESS);
-  self.i2c.initialize();
 
   self._readRegister(WHO_AM_I, function (err, c) {
     if (c == 0x2A) { // WHO_AM_I should always return 0x2A
@@ -98,7 +97,7 @@ util.inherits(Accelerometer, EventEmitter)
 
 Accelerometer.prototype._readRegisters = function (addressToRead, bytesToRead, next)
 {
-  this.i2c.transfer([addressToRead], bytesToRead, next);
+  this.i2c.transfer(new Buffer([addressToRead]), bytesToRead, next);
 }
 
 Accelerometer.prototype._readRegister = function (addressToRead, next)
@@ -111,7 +110,7 @@ Accelerometer.prototype._readRegister = function (addressToRead, next)
 // Write a single byte to the register.
 Accelerometer.prototype._writeRegister = function (addressToWrite, dataToWrite, next)
 {
-  this.i2c.send([addressToWrite, dataToWrite], next);
+  this.i2c.send(new Buffer([addressToWrite, dataToWrite]), next);
 }
 
 Accelerometer.prototype.setListening = function () {
