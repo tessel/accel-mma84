@@ -41,8 +41,7 @@ function Accelerometer (hardware)
     if (c == 0x2A) { // WHO_AM_I should always return 0x2A
       console.log("MMA8452Q is online...");
     } else {
-      console.log("Could not connect to MMA8452Q, received", c);
-      while (1) { continue; } // Loop forever if communication doesn't happen
+      throw new Error("Could not connect to MMA8452Q, received", c);
     }
 
     // Must be in standby to change registers
