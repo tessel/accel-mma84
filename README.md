@@ -11,30 +11,32 @@ npm install accel-mma84
 // var hardware = require('hardware');
 var tessel = require('tessel');
 console.log("Connecting to accelerometer on port bank A");
-var accel = require('accel-mma84').connect(tessel.port("A"));
+var accel = require('accel-mma84').use(tessel.port("A"));
 
 // Initialize the accelerometer.
-accel.on('connected', function () {
-  // Loop forever.
-  setInterval(function () {
-    accel.getAcceleration(function (err, xyz) {
-      console.log("x:", xyz[0].toFixed(2),
-        "y:", xyz[1].toFixed(2),
-        "z:", xyz[2].toFixed(2));
-    });
-  }, 100);
+accel.on('ready', function () {
+  // Stream accelerometer data
+  accel.on('data', function (xyz) {
+    console.log("x:", xyz[0].toFixed(2),
+      "y:", xyz[1].toFixed(2),
+      "z:", xyz[2].toFixed(2));
+  });
 });
+
+accel.on('error', function(err) {
+  console.log("Unable to connect to module: ", err);
+})
 ```
 
 ##Methods
-
-*  **`accel`.initialize()**
 
 *  **`accel`.getAcceleration(callback(err, xyz))**
 
 ##Events
 
-* *connected*
+* *ready*
+
+* *error*
 
 * *data*
 

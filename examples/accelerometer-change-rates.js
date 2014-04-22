@@ -6,10 +6,10 @@ streaming from the accelerometer
 *********************************************/
 
 var tessel = require('tessel');
-var accel = require('../').connect(tessel.port("A"));
+var accel = require('../').use(tessel.port("A"));
 
 // Initialize the accelerometer.
-accel.on('connected', function () {
+accel.on('ready', function () {
 	// Stream accelerometer data
 	accel.on('data', function (xyz) {
 		console.log("x:", xyz[0].toFixed(2),
@@ -20,7 +20,7 @@ accel.on('connected', function () {
 	setTimeout(function () {
 		console.log('Stopping stream')
 		accel.removeAllListeners('data', function () {
-			console.log('listener removed')
+			console.log('listener removed');
 			//After two more seconds, change stream rate, then stream again
 			setTimeout(function () {
 				console.log('Changing poll frequency')

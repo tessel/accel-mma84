@@ -3,7 +3,7 @@ This is a more colorful accelerometer example.
 *********************************************/
 
 var tessel = require('tessel');
-var accel = require('../').connect(tessel.port("A"));
+var accel = require('../').use(tessel.port("A"));
 
 function pad (f) {
   return ("      +" + f.toFixed(2)).substr(-5);
@@ -34,7 +34,7 @@ function yellow (s) {
 }
 
 // Initialize the accelerometer.
-accel.on('connected', function () {
+accel.on('ready', function () {
   // Stream accelerometer data
   accel.on('data', function (xyz) {
     var avgs = [];

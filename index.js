@@ -35,15 +35,12 @@ function Accelerometer (hardware)
   self.listening = false;
   self.pollFrequency = 100;
 
-  self.i2c = new hardware.I2C(I2C_ADDRESS);
+  self.i2c = hardware.I2C(I2C_ADDRESS);
 
   self._readRegister(WHO_AM_I, function (err, c) {
-    if (c == 0x2A) { // WHO_AM_I should always return 0x2A
-      console.log("MMA8452Q is online...");
-    } else {
-      throw new Error("Could not connect to MMA8452Q, received", c);
-    }
-
+    if (c != 0x2A) { // WHO_AM_I should always return 0x2A
+      self.emit('error', new Error("Could not connect to MMA8452Q, received" + c.toString()))
+    } 
     // Must be in standby to change registers
     self.modeStandby(function () {
       // Set up the full scale range to 2, 4, or 8g.
@@ -53,7 +50,7 @@ function Accelerometer (hardware)
       self._writeRegister(XYZ_DATA_CFG, fsr, function () {
         // The default data rate is 800Hz and we don't modify it in this example code
         self.modeActive(function () {
-          self.emit('connected');
+          self.emit('ready');
         });  // Set to active to start reading
       });
     });
@@ -183,6 +180,6 @@ Accelerometer.prototype.setPollFrequency = function (milliseconds) {
 }
 
 exports.Accelerometer = Accelerometer;
-exports.connect = function (hardware) {
+exports.use = function (hardware) {
   return new Accelerometer(hardware);
 };
