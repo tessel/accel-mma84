@@ -15,10 +15,11 @@ var GSCALE = 2
 // See the many application notes for more info on setting all of these registers:
 // http://www.freescale.com/webapp/sps/site/prod_summary.jsp?code=MMA8452Q
 // MMA8452 registers
-var OUT_X_MSB = 0x01
-var XYZ_DATA_CFG = 0x0E
-var WHO_AM_I = 0x0D
-var CTRL_REG1 = 0x2A
+var OUT_X_MSB = 0x01;
+var XYZ_DATA_CFG = 0x0E;
+var WHO_AM_I = 0x0D;
+var CTRL_REG1 = 0x2A;
+var CTRL_REG4 = 0x2D;
 
 
 /**
@@ -33,7 +34,8 @@ function Accelerometer (hardware)
   self.hardware = hardware;
   self.numListeners = 0;
   self.listening = false;
-  self.pollFrequency = 100;
+  self.outputRate = 12.5;
+  self.dataInterrupt = self.hardware.gpio(2);
 
   self.i2c = hardware.I2C(I2C_ADDRESS);
 
@@ -48,44 +50,13 @@ function Accelerometer (hardware)
       if (fsr > 8) fsr = 8; //Easy error check
       fsr >>= 2; // Neat trick, see page 22. 00 = 2G, 01 = 4A, 10 = 8G
       self._writeRegister(XYZ_DATA_CFG, fsr, function () {
-        // The default data rate is 800Hz and we don't modify it in this example code
-        self.modeActive(function () {
+        self.setOutputRate(self.outputRate, function(err) {
           self.emit('ready');
-        });  // Set to active to start reading
+        });
       });
     });
-    // If we get a new listener
-    self.on('newListener', function(event) {
-      if (event == "data") {
-        // Add to the number of things listening
-        self.numListeners += 1;
-        // If we're not already listening
-        if (!self.listening) {
-          // Start listening
-          self.setListening();
-        }
-      }
-    });
 
-    // If we remove a listener
-    self.on('removeListener', function(event) {
-      if (event == "data") {
-        // Remove from the number of things listening
-        console.log('prev listeners', self.numListeners);
-        self.numListeners -= 1;
-        console.log('now', self.numListeners);
-        // Because we listen in a while loop, if this.listening goes to 0, we'll stop listening automatically
-        if (self.numListeners < 1) {
-          self.listening = 0;
-        }
-      }
-    });
-
-    // If all listeners removed
-    self.on('removeAllListeners', function(event) {
-      self.numListeners = 0;
-      self.listening = 0;
-    });
+    self.dataInterrupt.watch('fall', self.dataReady);
   });
 }
 
@@ -177,6 +148,113 @@ Accelerometer.prototype.setPollFrequency = function (milliseconds) {
     clearInterval(self.listeningLoop);
     self.setListening();
   }
+}
+
+Accelerometer.prototype.availableOutputRates = function() {
+  return [800, 400, 200, 100, 50, 12.5, 6.25, 1.56];
+}
+
+Accelerometer.prototype._getClosestOutputRate = function(requestedRate, callback) {
+  var available = this.availableOutputRates();
+  console.log('vail', available);
+  for (var i = 0; i < available.length; i++) {
+    console.log('a', available[i], 'b', requestedRate);
+    if (available[i] <= requestedRate) {
+      if (callback) callback(null, available[i]);
+      return;
+    }
+  }
+  console.log('no good');
+  if (callback) callback(new Error("Invalid requested rate."));
+}
+
+// Sets the polling frequency for streamed data (default 100ms)
+Accelerometer.prototype.setOutputRate = function (hz, callback) {
+  var self = this;
+
+  // Put accel into standby
+  self.modeStandby(function inStandby() {
+    // Find the closest available rate (rounded down)
+    self._getClosestOutputRate(hz, function gotRequested(err, closest) {
+      if (err) {
+        if (callback) callback(new Error("Rate must be >= 1.56Hz"));
+        return;
+      }
+      console.log('closest should be 1.56. is', closest);
+      // Set our property
+      self.outputRate = closest;
+      // Get the binary representation of the rate (for the register)
+      var bin = self.availableOutputRates().indexOf(closest);
+      console.log('index of closest should be 7. is', bin);
+      // Read the current register value
+      self._readRegister(CTRL_REG1, function readComplete(err, regVal) {
+        console.log('control should be 0. is', regVal);
+        // Clear the three bits of output rate control (0b11000111 = 199)
+        regVal &= 199;
+        // Move the binary rep into place (bits 3:5)
+        regVal |= (bin << 3);
+        console.log('new val is', regVal);
+        // Write that value into the control register
+        self._writeRegister(CTRL_REG1, regVal,  function writeComplete() {
+          self._readRegister(CTRL_REG1, function(err, val) {
+            console.log('reading value afterward', val);
+             // Enable data interrupts
+            self._writeRegister(CTRL_REG4, 1, function() {
+              self._readRegister(CTRL_REG4, function(err, cntrl_val) {
+                console.log('control val afterward', cntrl_val);
+                // Put back into active mode
+                self.modeActive(function activated() {
+                  // Call callback
+                  if (callback) callback();
+                  return;
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+};
+
+Accelerometer.prototype.setScale = function(scale, callback) {
+  var self = this;
+
+  var fsr = scale;
+  if (fsr > 8) fsr = 8; //Easy error check
+  fsr >>= 2; // Neat trick, see page 22. 00 = 2G, 01 = 4A, 10 = 8G
+
+  // Set the scale
+  self.modeStandby(function() {
+    self._writeRegister(XYZ_DATA_CFG, fsr, function () {
+      self.scale = scale;
+      self.modeActive(function activated() {
+        if (callback) callback();
+      });
+    });
+  });
+}
+
+Accelerometer.prototype.dataReady = function() {
+  var self = this;
+
+  // Data is ready so grab the data
+  self.getAcceleration(function(err, xyz) {
+    // If we had an error, emit it
+    if (err) {
+      // Emitting error
+      setImmediate(function errRead() {
+        self.emit('error', err);
+      });
+    }
+    // If there was no error
+    else {
+      // Emit the data
+      setImmediate(function success() {
+        self.emit('data', xyz);
+      });
+    }
+  });
 }
 
 exports.Accelerometer = Accelerometer;

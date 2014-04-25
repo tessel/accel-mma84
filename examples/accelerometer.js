@@ -15,3 +15,9 @@ accel.on('ready', function () {
       "z:", xyz[2].toFixed(2));
 	});
 });
+
+accel.on('error', function(err) {
+  console.log('error connecting', err);
+})
+
+setInterval(function(){}, 20000); 
