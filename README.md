@@ -32,6 +32,14 @@ accel.on('error', function(err) {
 
 *  **`accel`.getAcceleration(callback(err, xyz))**
 
+*  **`accel`.setOutputRate(rateInHz, callback(err, xyz))**
+
+*  **`accel`.availableOutputRates()**
+
+*  **`accel`.setScaleRange(scaleRange, callback(err, xyz))**
+
+*  **`accel`.availableScaleRanges()**
+
 ##Events
 
 * *ready*
