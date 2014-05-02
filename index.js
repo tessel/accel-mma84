@@ -30,7 +30,7 @@ function Accelerometer (hardware, callback)
   // Port assignment
   self.hardware = hardware;
   // Rate at which data is collected and is ready to be read
-  self.outputRate = 12.5;
+  self.outputRate = 6.25;
   // Sets full-scale range to +/-2, 4, or 8g. Used to calc real g values.
   self.scaleRange = 2;
   // Interrupt pin for the data ready event
@@ -48,7 +48,7 @@ function Accelerometer (hardware, callback)
     // should always return 0x2A
     if (c !== 0x2A) { 
       // This is the wrong chip
-      err = new Error("Could not connect to MMA8452Q, received" + c.toString() + ". Expected 0x2A.");
+      err = new Error("Could not connect to MMA8452Q, received " + c.toString() + ". Expected 0x2A.");
       // Fail the init
       return self.failProcedure(err);
     }
@@ -80,7 +80,7 @@ function Accelerometer (hardware, callback)
   });
 
   // Set up an interrupt handler for data ready
-  self.dataInterrupt.watch('fall', self.dataReady.bind(self));
+  self.dataInterrupt.watch('low', self.dataReady.bind(self));
 
   self.on('newListener', function(event) {
     // If we have a new data listener
@@ -277,7 +277,6 @@ Accelerometer.prototype.setOutputRate = function (hz, callback) {
 
         // Get the binary representation of the rate (for the register)
         var bin = self.availableOutputRates().indexOf(closest);
-
         // If the binary rep could be found
         if (bin !== -1) {
           // Read the current register value
@@ -355,17 +354,15 @@ Accelerometer.prototype.dataReady = function() {
     // If we had an error, emit it
     if (err) {
       // Emitting error
-      setImmediate(function errRead() {
-        self.emit('error', err);
-      });
+      self.emit('error', err);
     }
     // If there was no error
     else {
       // Emit the data
-      setImmediate(function success() {
-        self.emit('data', xyz);
-      });
+      self.emit('data', xyz);
     }
+
+     self.dataInterrupt.watch('low', self.dataReady.bind(self));
   });
 };
 
