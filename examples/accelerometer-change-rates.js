@@ -22,13 +22,13 @@ accel.on('ready', function () {
     accel.removeAllListeners('data');
     //After two more seconds, change stream rate, then stream again
     console.log('Changing poll frequency')
-    // accel.setOutputRate(1.25, function rateSet() {
-      // accel.on('data', function (xyz) {
-      //   console.log("slow x:", xyz[0].toFixed(2),
-      //     "slow y:", xyz[1].toFixed(2),
-      //     "slow z:", xyz[2].toFixed(2));
-      // });
-    // }); // every 1 second (default is 10x/second)
+    accel.setOutputRate(1.25, function rateSet() {
+      accel.on('data', function (xyz) {
+        console.log("slow x:", xyz[0].toFixed(2),
+          "slow y:", xyz[1].toFixed(2),
+          "slow z:", xyz[2].toFixed(2));
+      });
+    }); // every 1 second (default is 10x/second)
   }, 2000);
 });
 
