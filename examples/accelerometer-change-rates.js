@@ -18,22 +18,22 @@ accel.on('ready', function () {
   });
   //After two seconds, stop streaming
   setTimeout(function () {
-    console.log('removing listeners')
+    console.log('removing listeners');
     accel.removeAllListeners('data');
     //After two more seconds, change stream rate, then stream again
-    console.log('Changing poll frequency')
+    console.log('Changing poll frequency');
     accel.setOutputRate(1.25, function rateSet() {
       accel.on('data', function (xyz) {
         console.log("slow x:", xyz[0].toFixed(2),
           "slow y:", xyz[1].toFixed(2),
           "slow z:", xyz[2].toFixed(2));
       });
-    }); // every 1 second (default is 10x/second)
+    }); 
   }, 2000);
 });
 
 accel.on('error', function(err) {
   console.log('there was an error', err);
-})
+});
 
 setInterval(function() {}, 20000);
