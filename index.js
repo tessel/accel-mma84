@@ -1,6 +1,6 @@
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
-var q = require('./lib/simple-queue');
+var queue = require('sync-queue');
 
 // The SparkFun breakout board defaults to 1, set to 0 if SA0 jumper on the bottom of the board is set
 var I2C_ADDRESS = 0x1D;  // 0x1D if SA0 is high, 0x1C if low
@@ -18,7 +18,7 @@ function Accelerometer (hardware, callback)
 {
   var self = this;
   // Command Queue
-  self.queue = q.createQueue();
+  self.queue = new queue();
   // Port assignment
   self.hardware = hardware;
   // Rate at which data is collected and is ready to be read
