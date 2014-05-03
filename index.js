@@ -197,7 +197,9 @@ Accelerometer.prototype.getChipID = function(callback) {
 };
 
 Accelerometer.prototype.availableOutputRates = function() {
-  return [800, 400, 200, 100, 50, 12.5, 6.25, 1.56];
+  return [12.5, 6.25, 1.56];
+  // Uncomment below and delete above when tessel/beta/issues#256 is fixed
+  // return [800, 400, 200, 100, 50, 12.5, 6.25, 1.56];
 };
 
 Accelerometer.prototype.availableScaleRanges = function() {
@@ -273,7 +275,9 @@ Accelerometer.prototype.setOutputRate = function (hz, callback) {
         self.outputRate = closest;
 
         // Get the binary representation of the rate (for the register)
-        var bin = self.availableOutputRates().indexOf(closest);
+        var bin = self.availableOutputRates().indexOf(closest) + 5;
+        // Uncomment below and delete above when tessel/beta/issues#256 is fixed
+        //var bin = self.availableOutputRates().indexOf(closest);
         // If the binary rep could be found
         if (bin !== -1) {
           // Read the current register value
