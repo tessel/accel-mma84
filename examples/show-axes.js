@@ -8,7 +8,7 @@ per axis to the console.
 var tessel = require('tessel');
 var accel = require('accel-mma84').use(tessel.port('A'));
 
-// define vars
+// Define vars
 var led1 = tessel.led[1].output();
 var led2 = tessel.led[2].output();
 var led3 = tessel.led[3].output();
@@ -17,7 +17,7 @@ var textOut = "";
 
 accel.on('ready', function(){
   accel.on('data', function(xyz){
-    // refresh variables;
+    // Refresh variables;
     var x = xyz[0];
     var y = xyz[1];
     var z = xyz[2];
