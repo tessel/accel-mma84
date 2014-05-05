@@ -16,17 +16,16 @@ accel.on('ready', function () {
       "y:", xyz[1].toFixed(2),
       "z:", xyz[2].toFixed(2));
   });
-  //After two seconds, stop streaming
+  //After two seconds, change stream rate, then stream again
   setTimeout(function () {
-    console.log('removing listeners');
+    console.log('Changing the output rate...');
     accel.removeAllListeners('data');
-    //After two more seconds, change stream rate, then stream again
-    console.log('Changing poll frequency');
-    accel.setOutputRate(1.25, function rateSet() {
+    // Setting the output data rate in Hz
+    accel.setOutputRate(1.56, function rateSet() {
       accel.on('data', function (xyz) {
-        console.log("slow x:", xyz[0].toFixed(2),
-          "slow y:", xyz[1].toFixed(2),
-          "slow z:", xyz[2].toFixed(2));
+        console.log("slower rate x:", xyz[0].toFixed(2),
+          "slower rate y:", xyz[1].toFixed(2),
+          "slower rate z:", xyz[2].toFixed(2));
       });
     }); 
   }, 2000);

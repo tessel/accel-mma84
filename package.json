@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies" : {
-    "sync-queue" : "*"
+    "sync-queue" : "0.0.1"
   },
   "hardware": {
     "./examples": false

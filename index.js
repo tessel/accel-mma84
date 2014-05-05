@@ -206,10 +206,13 @@ Accelerometer.prototype.getChipID = function(callback) {
 };
 
 Accelerometer.prototype.availableOutputRates = function() {
+  // Available interrupt rates in Hz
   return [800, 400, 200, 100, 50, 12.5, 6.25, 1.56];
 };
 
 Accelerometer.prototype.availableScaleRanges = function() {
+  // Available accelerometer ranges (in units of Gs)
+  // The higher the range, the less accurate the readings are
   return [2, 4, 8];
 };
 
