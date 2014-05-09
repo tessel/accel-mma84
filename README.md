@@ -35,15 +35,17 @@ setInterval(function(){}, 20000);
 
 ##Methods
 
-*  **`accel`.getAcceleration(callback(err, xyz))**
+*  **`accel`.getAcceleration(callback(err, xyz))** Gets the acceleration from the device, outputs as array [x, y, z].
 
-*  **`accel`.setOutputRate(rateInHz, callback(err, xyz))**
+*  **`accel`.setOutputRate(rateInHz, callback(err))** Sets the output rate of the data (1.56-800 Hz).
 
-*  **`accel`.availableOutputRates()**
+*  **`accel`.availableOutputRates()** Logs the available interrupt rates in Hz.
 
-*  **`accel`.setScaleRange(scaleRange, callback(err, xyz))**
+*  **`accel`.setScaleRange(scaleRange, callback(err))** Sets the accelerometer to read up to 2, 4, or 8 Gs of acceleration (smaller range = better precision).
 
-*  **`accel`.availableScaleRanges()**
+*  **`accel`.availableScaleRanges()** Logs the available accelerometer ranges (in units of Gs).
+
+*  **`accel`.enableDataInterrupts(trueOrFalse, callback(err))** Enables or disables data interrupts. Set the first param truthy to enable, false to disable.
 
 ##Events
 
