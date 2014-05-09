@@ -5,6 +5,9 @@ has positive acceleration. Also prints +/-
 per axis to the console.
 *********************************************/
 
+// Any copyright is dedicated to the Public Domain.
+// http://creativecommons.org/publicdomain/zero/1.0/
+
 var tessel = require('tessel');
 var accel = require('accel-mma84').use(tessel.port('A'));
 

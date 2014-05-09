@@ -5,6 +5,9 @@ stream, changes the polling rate, and resumes
 streaming from the accelerometer
 *********************************************/
 
+// Any copyright is dedicated to the Public Domain.
+// http://creativecommons.org/publicdomain/zero/1.0/
+
 var tessel = require('tessel');
 var accel = require('../').use(tessel.port("A"));
 
@@ -27,7 +30,7 @@ accel.on('ready', function () {
           "slower rate y:", xyz[1].toFixed(2),
           "slower rate z:", xyz[2].toFixed(2));
       });
-    }); 
+    });
   }, 2000);
 });
 
