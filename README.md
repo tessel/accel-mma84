@@ -35,30 +35,34 @@ setInterval(function(){}, 20000);
 
 ##Methods
 
-*  **`accel`.getAcceleration(callback(err, xyz))** Gets the acceleration from the device, outputs as array [x, y, z].
-
-*  **`accel`.setOutputRate(rateInHz, callback(err))** Sets the output rate of the data (1.56-800 Hz).
-
 *  **`accel`.availableOutputRates()** Logs the available interrupt rates in Hz.
-
-*  **`accel`.setScaleRange(scaleRange, callback(err))** Sets the accelerometer to read up to 2, 4, or 8 Gs of acceleration (smaller range = better precision).
 
 *  **`accel`.availableScaleRanges()** Logs the available accelerometer ranges (in units of Gs).
 
 *  **`accel`.enableDataInterrupts(trueOrFalse, callback(err))** Enables or disables data interrupts. Set the first param truthy to enable, false to disable.
 
+*  **`accel`.getAcceleration(callback(err, xyz))** Gets the acceleration from the device, outputs as array [x, y, z].
+
+*  **`accel`.setOutputRate(rateInHz, callback(err))** Sets the output rate of the data (1.56-800 Hz).
+
+*  **`accel`.setScaleRange(scaleRange, callback(err))** Sets the accelerometer to read up to 2, 4, or 8 Gs of acceleration (smaller range = better precision).
+
 ##Events
 
-* *ready*
+* *data* Emitted when data is available.
 
-* *error*
+* *error* Emitted upon error.
 
-* *data*
+* *ready* Emitted upon first successful communication between the Tessel and the module.
 
 ##Further Examples
+See the examples folder for code.
 
-* [Average (more advanced use)](https://github.com/tessel/modules/blob/master/accel-mma84/examples/average.js)
+* show-axes: Manipulate LEDs based on acceleration in the three axes.
+
+* change-rates: Change the polling rate.
 
 ## License
 
 MIT
+APACHE
