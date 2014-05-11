@@ -391,7 +391,7 @@ Accelerometer.prototype.setScaleRange = function(scaleRange, callback) {
   });
 };
 
-function use () {
+function use (hardware, callback) {
   return new Accelerometer(hardware, callback);
 }
 
