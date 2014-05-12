@@ -39,7 +39,7 @@ setInterval(function(){}, 20000);
 
 ##### * `accel.availableScaleRanges()` Logs the available accelerometer ranges (in units of Gs).
 
-##### * `accel.enableDataInterrupts(trueOrFalse, callback(err))` Enables or disables data interrupts. Set the first param truthy to enable, false to disable.
+##### * `accel.enableDataInterrupts(trueOrFalse, callback(err))` Enables or disables data interrupts. Set the first param truthy to enable, falsy to disable.
 
 ##### * `accel.getAcceleration(callback(err, xyz))` Gets the acceleration from the device, outputs as array [x, y, z].
 

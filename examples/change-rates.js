@@ -9,7 +9,7 @@ streaming from the accelerometer
 // http://creativecommons.org/publicdomain/zero/1.0/
 
 var tessel = require('tessel');
-var accel = require('../').use(tessel.port("A"));
+var accel = require('../').use(tessel.port("A")); // Replace '../' with 'accel-mma84' in your own demos
 
 // Initialize the accelerometer.
 accel.on('ready', function () {

@@ -9,7 +9,7 @@ per axis to the console.
 // http://creativecommons.org/publicdomain/zero/1.0/
 
 var tessel = require('tessel');
-var accel = require('../').use(tessel.port('A'));
+var accel = require('../').use(tessel.port('A')); // Replace '../' with 'accel-mma84' in your own demos
 
 // Define vars
 var led1 = tessel.led[1].output();
