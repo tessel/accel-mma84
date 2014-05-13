@@ -13,7 +13,7 @@
     "./examples": false
   },
   "scripts": {
-    "test": "./node_modules/.bin/tap -e 'tessel run -D ACCEL_PORT' test/*.js $ACCEL_PORT"
+    "test": "./node_modules/.bin/tap -e 'tessel run' test/*.js"
   },
   "devDependencies": {
     "tape": "~2.3.2",
