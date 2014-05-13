@@ -9,14 +9,14 @@ per axis to the console.
 // http://creativecommons.org/publicdomain/zero/1.0/
 
 var tessel = require('tessel');
-var accel = require('../').use(tessel.port('A')); // Replace '../' with 'accel-mma84' in your own code
+var accel = require('../').use(tessel.port['A']); // Replace '../' with 'accel-mma84' in your own code
 
 // Define vars
 var led1 = tessel.led[1].output();
 var led2 = tessel.led[2].output();
 var led3 = tessel.led[3].output();
 
-var textOut = "";
+var textOut = '';
 
 accel.on('ready', function(){
   accel.on('data', function(xyz){
@@ -30,24 +30,24 @@ accel.on('ready', function(){
     // Print which axes are positive and turn on corresponding LEDs
     if(x > 0) {
       led1.high();
-      textOut += "x: + | ";
+      textOut += 'x: + | ';
     } else {
       led1.low();
-      textOut += "x: - | ";
+      textOut += 'x: - | ';
     }
     if(y > 0) {
       led2.high();
-      textOut += "y: + | ";
+      textOut += 'y: + | ';
     } else {
       led2.low();
-      textOut += "y: - | ";
+      textOut += 'y: - | ';
     }
     if(z > 0) {
       led3.high();
-      textOut += "z: +";
+      textOut += 'z: +';
     } else {
       led3.low();
-      textOut += "z: -";
+      textOut += 'z: -';
     }
 
     console.log(textOut);
