@@ -20,8 +20,4 @@ accel.on('ready', function () {
 
 });
 
-accel.on('error', function(err) {
-  console.log('error connecting', err);
-});
-
 setInterval(function(){}, 20000);

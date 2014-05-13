@@ -27,7 +27,7 @@ accel.on('ready', function(){
 
     textOut = "";
 
-    // light & print which axes are positive
+    // Print which axes are positive and turn on corresponding LEDs
     if(x > 0) {
       led1.high();
       textOut += "x: + | ";

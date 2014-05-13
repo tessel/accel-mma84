@@ -49,7 +49,7 @@ setInterval(function(){}, 20000);
 
 ##Events
 
-##### * `accel.on('data', callback(data))` Emitted when data is available.
+##### * `accel.on('data', callback(xyz))` Emitted when data is available. `xyz` is an array in the form of [x, y, z].
 
 ##### * `accel.on('error', callback(err))` Emitted upon error.
 
