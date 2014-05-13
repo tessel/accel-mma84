@@ -82,24 +82,18 @@ function Accelerometer (hardware, callback) {
     self.dataInterrupt.watch('low', self._dataReady.bind(self));
 
     self.on('newListener', function(event) {
-      // If we have a new data listener
-      if (event === 'data') {
-        // And the count was previously zero
-        if (self.listeners('event').length === 0) {
-          // Enable interrupts at whatever rate was previously set
-          self.enableDataInterrupts(true, queueNext);
-        }
+      // If we have a new sample listener
+      if (event == 'data' || event == 'sample') {
+        // Enable interrupts at whatever rate was previously set.
+        self.enableDataInterrupts(true, queueNext);
       }
     });
 
     self.on('removeListener', function(event) {
-      // If we have a new data listener
-      if (event === 'data') {
-        // And the count was previously zero
-        if (self.listeners(event).length === 0) {
-          // Set the default rate of output
-          self.enableDataInterrupts(false, queueNext);
-        }
+      // If we have a new || event == 'sample' listener
+      if (event == 'data' || event == 'sample') {
+        // Disable interrupt.
+        self.enableDataInterrupts(false, queueNext);
       }
     });
   });
@@ -142,7 +136,8 @@ Accelerometer.prototype._dataReady = function() {
     // If there was no error
     else {
       // Emit the data
-      self.emit('data', xyz);
+      self.emit('data', xyz); // old-style, deprecated
+      self.emit('sample', xyz);
     }
 
      self.dataInterrupt.watch('low', self._dataReady.bind(self));
@@ -255,6 +250,12 @@ Accelerometer.prototype.availableScaleRanges = function() {
 // Enables or disables data interrupts. Set the first param truthy to enable, false to disable.
 Accelerometer.prototype.enableDataInterrupts = function(enable, callback) {
   var self = this;
+
+  // Don't call unnecessarily.
+  if (this._dataInterrupts == !!enable) {
+    return callback && callback();
+  }
+  this._dataInterrupts = !!enable;
 
   self.queue.place(function queueEnable() {
     // We're going to change register 4
