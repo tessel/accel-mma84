@@ -3,8 +3,11 @@ This basic accelerometer example logs a stream
 of x, y, and z data from the accelerometer
 *********************************************/
 
+// Any copyright is dedicated to the Public Domain.
+// http://creativecommons.org/publicdomain/zero/1.0/
+
 var tessel = require('tessel');
-var accel = require('../').use(tessel.port("A"));
+var accel = require('../').use(tessel.port("A")); // Replace '../' with 'accel-mma84' in your own code
 
 // Initialize the accelerometer.
 accel.on('ready', function () {
@@ -17,8 +20,4 @@ accel.on('ready', function () {
 
 });
 
-accel.on('error', function(err) {
-  console.log('error connecting', err);
-});
-
-setInterval(function(){}, 20000); 
+setInterval(function(){}, 20000);

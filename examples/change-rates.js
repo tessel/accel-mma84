@@ -5,8 +5,11 @@ stream, changes the polling rate, and resumes
 streaming from the accelerometer
 *********************************************/
 
+// Any copyright is dedicated to the Public Domain.
+// http://creativecommons.org/publicdomain/zero/1.0/
+
 var tessel = require('tessel');
-var accel = require('../').use(tessel.port("A"));
+var accel = require('../').use(tessel.port("A")); // Replace '../' with 'accel-mma84' in your own code
 
 // Initialize the accelerometer.
 accel.on('ready', function () {
@@ -27,12 +30,8 @@ accel.on('ready', function () {
           "slower rate y:", xyz[1].toFixed(2),
           "slower rate z:", xyz[2].toFixed(2));
       });
-    }); 
+    });
   }, 2000);
-});
-
-accel.on('error', function(err) {
-  console.log('there was an error', err);
 });
 
 setInterval(function() {}, 20000);

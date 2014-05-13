@@ -5,8 +5,11 @@ has positive acceleration. Also prints +/-
 per axis to the console.
 *********************************************/
 
+// Any copyright is dedicated to the Public Domain.
+// http://creativecommons.org/publicdomain/zero/1.0/
+
 var tessel = require('tessel');
-var accel = require('accel-mma84').use(tessel.port('A'));
+var accel = require('../').use(tessel.port('A')); // Replace '../' with 'accel-mma84' in your own code
 
 // Define vars
 var led1 = tessel.led[1].output();
@@ -24,7 +27,7 @@ accel.on('ready', function(){
 
     textOut = "";
 
-    // light & print which axes are positive
+    // Print which axes are positive and turn on corresponding LEDs
     if(x > 0) {
       led1.high();
       textOut += "x: + | ";

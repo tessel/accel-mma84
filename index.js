@@ -23,8 +23,7 @@ var WHO_AM_I = 0x0D;
 var CTRL_REG1 = 0x2A;
 var CTRL_REG4 = 0x2D;
 
-function Accelerometer (hardware, callback)
-{
+function Accelerometer (hardware, callback) {
   var self = this;
   // Command Queue
   self.queue = new queue();
@@ -36,34 +35,34 @@ function Accelerometer (hardware, callback)
   self.scaleRange = 2;
   // Interrupt pin for the data ready event
   self.dataInterrupt = self.hardware.gpio(2);
-  // Address for i2C 
+  // Address for i2C
   // TODO: Account for manual address changes?
   self.i2c = hardware.I2C(I2C_ADDRESS);
 
   // Check that we can read the correct chip id
-  self.getChipID(function IDRead(err, c) {
+  self._getChipID(function IDRead(err, c) {
     if (err) {
       // Fail the init
-      return self.failProcedure(err);
+      return self._failProcedure(err);
     }
     // should always return 0x2A
-    if (c !== 0x2A) { 
+    if (c !== 0x2A) {
       // This is the wrong chip
       err = new Error("Could not connect to MMA8452Q, received " + c.toString() + ". Expected 0x2A.");
       // Fail the init
-      return self.failProcedure(err);
+      return self._failProcedure(err);
     }
 
     // Set the scale range to standard
     self.setScaleRange(self.scaleRange, function(err) {
       if (err) {
-        return self.failProcedure(err, callback);
+        return self._failProcedure(err, callback);
       }
       else {
         // Set the output rate to standard
         self.setOutputRate(self.outputRate, function(err) {
           if (err) {
-            return self.failProcedure(err, callback);
+            return self._failProcedure(err, callback);
           }
           else {
             // Emit the ready event
@@ -80,7 +79,7 @@ function Accelerometer (hardware, callback)
     });
 
     // Set up an interrupt handler for data ready
-    self.dataInterrupt.watch('low', self.dataReady.bind(self));
+    self.dataInterrupt.watch('low', self._dataReady.bind(self));
 
     self.on('newListener', function(event) {
       // If we have a new data listener
@@ -95,7 +94,7 @@ function Accelerometer (hardware, callback)
 
     self.on('removeListener', function(event) {
       // If we have a new data listener
-      if (event === 'data') { 
+      if (event === 'data') {
         // And the count was previously zero
         if (self.listeners(event).length === 0) {
           // Set the default rate of output
@@ -108,7 +107,49 @@ function Accelerometer (hardware, callback)
 
 util.inherits(Accelerometer, EventEmitter);
 
-Accelerometer.prototype.failProcedure = function(err, callback) {
+Accelerometer.prototype._changeRegister = function(change, callback) {
+  var self = this;
+
+  // Put the accelerometer into standby
+  self._modeStandby(function inStandby(err) {
+    if (err) {
+      return self._failProcedure(err, callback);
+    }
+    else {
+      // Make whatever change was requested
+      change( function setActive(err) {
+        if (err) {
+          return self._failProcedure(err, callback);
+        }
+        else {
+          // Put the accelerometer back into active mode
+          self._modeActive(callback);
+        }
+      });
+    }
+  });
+};
+
+Accelerometer.prototype._dataReady = function() {
+  var self = this;
+  // Data is ready so grab the data
+  self.getAcceleration(function(err, xyz) {
+    // If we had an error, emit it
+    if (err) {
+      // Emitting error
+      self.emit('error', err);
+    }
+    // If there was no error
+    else {
+      // Emit the data
+      self.emit('data', xyz);
+    }
+
+     self.dataInterrupt.watch('low', self._dataReady.bind(self));
+  });
+};
+
+Accelerometer.prototype._failProcedure = function(err, callback) {
   var self = this;
 
   // Emit the error
@@ -121,99 +162,11 @@ Accelerometer.prototype.failProcedure = function(err, callback) {
   return;
 };
 
-Accelerometer.prototype._readRegisters = function (addressToRead, bytesToRead, callback)
-{
-  this.i2c.transfer(new Buffer([addressToRead]), bytesToRead, callback);
-};
-
-Accelerometer.prototype._readRegister = function (addressToRead, callback)
-{
-  this._readRegisters(addressToRead, 1, function (err, regs) {
-    callback(err, regs && regs[0]);
-  });
-};
-
-// Write a single byte to the register.
-Accelerometer.prototype._writeRegister = function (addressToWrite, dataToWrite, callback)
-{
-  this.i2c.send(new Buffer([addressToWrite, dataToWrite]), callback);
-};
-
-// Sets the MMA8452 to standby mode. It must be in standby to change most register settings
-Accelerometer.prototype.modeStandby = function (callback)
-{
-  var self = this;
-  // Clear the active bit to go into standby
-  self._readRegister(CTRL_REG1, function (err, c) {
-    if (err) {
-      return self.failProcedure(err, callback);
-    }
-    else {
-      return self._writeRegister(CTRL_REG1, c & ~(0x01), callback);
-    }
-  });
-};
-
-// Sets the MMA8452 to active mode. Needs to be in this mode to output data
-Accelerometer.prototype.modeActive = function (callback)
-{
-  var self = this;
-  // Set the active bit to begin detection
-  self._readRegister(CTRL_REG1, function (err, c) {
-    if (err) {
-      return failProcedure(err);
-    }
-    else {
-      return self._writeRegister(CTRL_REG1, c | (0x01), callback);
-    }
-  });
-};
-
-Accelerometer.prototype.getAcceleration = function (callback)
-{
-  var self = this;
-
-  self.queue.place( function readAccel() {
-    self._readRegisters(OUT_X_MSB, 6, function (err, rawData) {
-      if (err) throw err;
-      // Loop to calculate 12-bit ADC and g value for each axis
-      var out = [];
-      for (var i = 0; i < 3 ; i++) {
-        var gCount = (rawData[i*2] << 8) | rawData[(i*2)+1];  //Combine the two 8 bit registers into one 12-bit number
-
-        gCount = (gCount >> 4); //The registers are left align, here we right align the 12-bit integer
-
-        // If the number is negative, we have to make it so manually (no 12-bit data type)
-        if (rawData[i*2] > 0x7F) {
-          gCount = -(1 + 0xFFF - gCount); // Transform into negative 2's complement
-        }
-
-        out[i] = gCount / ((1<<12)/(2*self.scaleRange));
-      }
-
-      callback(null, out);
-
-      setImmediate(self.queue.next);
-    });
-  });
-};
-
 // Get the id of the chip
-Accelerometer.prototype.getChipID = function(callback) {
+Accelerometer.prototype._getChipID = function(callback) {
   this._readRegister(WHO_AM_I, function (err, c) {
     if (callback) callback(err, c);
   });
-};
-
-Accelerometer.prototype.availableOutputRates = function() {
-  // Available interrupt rates in Hz
-  return [800, 400, 200, 100, 50, 12.5, 6.25, 1.56];
-};
-
-Accelerometer.prototype.availableScaleRanges = function() {
-  // Available accelerometer ranges (in units of Gs)
-  // The higher the range, the less accurate the readings are
-  return [2, 4, 8];
 };
 
 Accelerometer.prototype._getClosestOutputRate = function(requestedRate, callback) {
@@ -245,26 +198,116 @@ Accelerometer.prototype._getClosestOutputRate = function(requestedRate, callback
   if (callback) callback(null, available[available.length-1]);
 };
 
-Accelerometer.prototype._changeRegister = function(change, callback) {
+// Sets the MMA8452 to active mode. Needs to be in this mode to output data
+Accelerometer.prototype._modeActive = function (callback) {
   var self = this;
-
-  // Put the accelerometer into standby
-  self.modeStandby(function inStandby(err) {
+  // Set the active bit to begin detection
+  self._readRegister(CTRL_REG1, function (err, c) {
     if (err) {
-      return self.failProcedure(err, callback);
+      return _failProcedure(err);
     }
     else {
-      // Make whatever change was requested
-      change( function setActive(err) {
+      return self._writeRegister(CTRL_REG1, c | (0x01), callback);
+    }
+  });
+};
+
+// Sets the MMA8452 to standby mode. It must be in standby to change most register settings
+Accelerometer.prototype._modeStandby = function (callback) {
+  var self = this;
+  // Clear the active bit to go into standby
+  self._readRegister(CTRL_REG1, function (err, c) {
+    if (err) {
+      return self._failProcedure(err, callback);
+    }
+    else {
+      return self._writeRegister(CTRL_REG1, c & ~(0x01), callback);
+    }
+  });
+};
+
+Accelerometer.prototype._readRegister = function (addressToRead, callback) {
+  this._readRegisters(addressToRead, 1, function (err, regs) {
+    callback(err, regs && regs[0]);
+  });
+};
+
+Accelerometer.prototype._readRegisters = function (addressToRead, bytesToRead, callback) {
+  this.i2c.transfer(new Buffer([addressToRead]), bytesToRead, callback);
+};
+
+// Write a single byte to the register.
+Accelerometer.prototype._writeRegister = function (addressToWrite, dataToWrite, callback) {
+  this.i2c.send(new Buffer([addressToWrite, dataToWrite]), callback);
+};
+
+// Logs the available interrupt rates in Hz
+Accelerometer.prototype.availableOutputRates = function() {
+  return [800, 400, 200, 100, 50, 12.5, 6.25, 1.56];
+};
+
+// Logs the available accelerometer ranges (in units of Gs)
+Accelerometer.prototype.availableScaleRanges = function() {
+  // The higher the range, the less accurate the readings are
+  return [2, 4, 8];
+};
+
+// Enables or disables data interrupts. Set the first param truthy to enable, false to disable.
+Accelerometer.prototype.enableDataInterrupts = function(enable, callback) {
+  var self = this;
+
+  self.queue.place(function queueEnable() {
+    // We're going to change register 4
+    self._changeRegister(function change(complete) {
+      // Read the register first
+      self._readRegister(CTRL_REG4, function(err, reg4) {
         if (err) {
-          return self.failProcedure(err, callback);
+          return complete(err);
         }
         else {
-          // Put the accelerometer back into active mode
-          self.modeActive(callback);
+          // If we are enabling, set first bit to 1, else 0
+          var regVal = (enable ? (reg4 |= 1) : (reg4 &= ~1));
+          // Write to the register
+          self._writeRegister(CTRL_REG4, regVal, function(err) {
+            return complete(err);
+          });
         }
       });
-    }
+    }, function intSet(err) {
+      if (callback) {
+        callback(err);
+      }
+      setImmediate(self.queue.next);
+    });
+  });
+};
+
+// Gets the acceleration from the device, outputs as array [x, y, z]
+Accelerometer.prototype.getAcceleration = function (callback) {
+  var self = this;
+
+  self.queue.place( function readAccel() {
+    self._readRegisters(OUT_X_MSB, 6, function (err, rawData) {
+      if (err) throw err;
+      // Loop to calculate 12-bit ADC and g value for each axis
+      var out = [];
+      for (var i = 0; i < 3 ; i++) {
+        var gCount = (rawData[i*2] << 8) | rawData[(i*2)+1];  // Combine the two 8 bit registers into one 12-bit number
+
+        gCount = (gCount >> 4); // The registers are left align, here we right align the 12-bit integer
+
+        // If the number is negative, we have to make it so manually (no 12-bit data type)
+        if (rawData[i*2] > 0x7F) {
+          gCount = -(1 + 0xFFF - gCount); // Transform into negative 2's complement
+        }
+
+        out[i] = gCount / ((1<<12)/(2*self.scaleRange));
+      }
+
+      callback(null, out);
+
+      setImmediate(self.queue.next);
+    });
   });
 };
 
@@ -308,7 +351,7 @@ Accelerometer.prototype.setOutputRate = function (hz, callback) {
         }
       }
     });
-  }, 
+  },
     function rateSet(err) {
       if (callback) {
         callback(err);
@@ -318,36 +361,7 @@ Accelerometer.prototype.setOutputRate = function (hz, callback) {
   });
 };
 
-Accelerometer.prototype.enableDataInterrupts = function(enable, callback) {
-
-  var self = this;
-
-  self.queue.place(function queueEnable() {
-    // We're going to change register 4
-    self._changeRegister(function change(complete) {
-      // Read the register first
-      self._readRegister(CTRL_REG4, function(err, reg4) {
-        if (err) {
-          return complete(err);
-        }
-        else {
-          // If we are enabling, set first bit to 1, else 0
-          var regVal = (enable ? (reg4 |= 1) : (reg4 &= ~1));
-          // Write to the register
-          self._writeRegister(CTRL_REG4, regVal, function(err) {
-            return complete(err);
-          });
-        }
-      });
-    }, function intSet(err) {
-      if (callback) {
-        callback(err);
-      }
-      setImmediate(self.queue.next);
-    });
-  });
-};
-
+// Sets the accelerometer to read up to 2, 4, or 8 Gs of acceleration (smaller range = better precision)
 Accelerometer.prototype.setScaleRange = function(scaleRange, callback) {
   var self = this;
 
@@ -377,26 +391,9 @@ Accelerometer.prototype.setScaleRange = function(scaleRange, callback) {
   });
 };
 
-Accelerometer.prototype.dataReady = function() {
-  var self = this;
-  // Data is ready so grab the data
-  self.getAcceleration(function(err, xyz) {
-    // If we had an error, emit it
-    if (err) {
-      // Emitting error
-      self.emit('error', err);
-    }
-    // If there was no error
-    else {
-      // Emit the data
-      self.emit('data', xyz);
-    }
-
-     self.dataInterrupt.watch('low', self.dataReady.bind(self));
-  });
-};
+function use (hardware, callback) {
+  return new Accelerometer(hardware, callback);
+}
 
 exports.Accelerometer = Accelerometer;
-exports.use = function (hardware, callback) {
-  return new Accelerometer(hardware, callback);
-};
+exports.use = use;
