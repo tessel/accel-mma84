@@ -1,6 +1,6 @@
 {
   "name": "accel-mma84",
-  "version": "0.0.6",
+  "version": "0.2.0",
   "description": "Library to run the MMA8452Q accelerometer.",
   "main": "index.js",
   "dependencies" : {
