@@ -3,9 +3,6 @@
   "version": "0.0.6",
   "description": "Library to run the MMA8452Q accelerometer.",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "dependencies" : {
     "sync-queue" : "0.0.1"
   },
@@ -13,11 +10,12 @@
     "./examples": false
   },
   "scripts": {
-    "test": "./node_modules/.bin/tap -e 'tessel run' test/*.js"
+    "test": "./testsuite.js"
   },
   "devDependencies": {
     "tape": "~2.3.2",
-    "tap": "git+https://github.com/tcr/node-tap.git#4f96b1"
+    "tap": "git+https://github.com/tcr/node-tap.git#3cb76e",
+    "shelljs": "~0.3.0"
   },
   "repository": "https://github.com/tessel/accel-mma84",
   "author": "Tim Cameron Ryan <tim@timryan.org>",
