@@ -34,7 +34,7 @@ function Accelerometer (hardware, callback) {
   // Sets full-scale range to +/-2, 4, or 8g. Used to calc real g values.
   self.scaleRange = 2;
   // Interrupt pin for the data ready event
-  self.dataInterrupt = self.hardware.gpio(2);
+  self.dataInterrupt = self.hardware.digital[2];
   // Address for i2C
   // TODO: Account for manual address changes?
   self.i2c = hardware.I2C(I2C_ADDRESS);

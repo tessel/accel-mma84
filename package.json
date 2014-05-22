@@ -3,14 +3,17 @@
   "version": "0.2.0",
   "description": "Library to run the MMA8452Q accelerometer.",
   "main": "index.js",
+  "scripts": {
+    "test": "./testsuite.js"
+  },
   "dependencies" : {
     "sync-queue" : "0.0.1"
   },
   "hardware": {
-    "./examples": false
-  },
-  "scripts": {
-    "test": "./testsuite.js"
+    "./examples": false,
+    "tape": false,
+    "tap": false,
+    "shelljs": false
   },
   "devDependencies": {
     "tape": "~2.3.2",
