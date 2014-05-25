@@ -1,12 +1,12 @@
+// Any copyright is dedicated to the Public Domain.
+// http://creativecommons.org/publicdomain/zero/1.0/
+
 /*********************************************
 Demonstrates axes by turning on a different
 LED per axis (x, y, z) only when that axis
 has positive acceleration. Also prints +/-
 per axis to the console.
 *********************************************/
-
-// Any copyright is dedicated to the Public Domain.
-// http://creativecommons.org/publicdomain/zero/1.0/
 
 var tessel = require('tessel');
 var accel = require('../').use(tessel.port['A']); // Replace '../' with 'accel-mma84' in your own code
