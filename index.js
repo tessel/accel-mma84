@@ -1,7 +1,3 @@
-var util = require('util');
-var EventEmitter = require('events').EventEmitter;
-var queue = require('sync-queue');
-
 // Copyright 2014 Technical Machine, Inc. See the COPYRIGHT
 // file at the top-level directory of this distribution.
 //
@@ -10,6 +6,10 @@ var queue = require('sync-queue');
 // <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
+
+var util = require('util');
+var EventEmitter = require('events').EventEmitter;
+var queue = require('sync-queue');
 
 // The SparkFun breakout board defaults to 1, set to 0 if SA0 jumper on the bottom of the board is set
 var I2C_ADDRESS = 0x1D;  // 0x1D if SA0 is high, 0x1C if low
