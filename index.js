@@ -58,14 +58,12 @@ function Accelerometer (hardware, callback) {
       self.setScaleRange(self.scaleRange, function(err) {
         if (err) {
           return self._failProcedure(err, callback);
-        }
-        else {
+        } else {
           // Set the output rate to standard
           self.setOutputRate(self.outputRate, function(err) {
             if (err) {
               return self._failProcedure(err, callback);
-            }
-            else {
+            } else {
               // Emit the ready event
               setImmediate(function emitReady() {
                 self.emit('ready');
@@ -113,14 +111,12 @@ Accelerometer.prototype._changeRegister = function(change, callback) {
   self._modeStandby(function inStandby(err) {
     if (err) {
       return self._failProcedure(err, callback);
-    }
-    else {
+    } else {
       // Make whatever change was requested
       change( function setActive(err) {
         if (err) {
           return self._failProcedure(err, callback);
-        }
-        else {
+        } else {
           // Put the accelerometer back into active mode
           self._modeActive(callback);
         }
@@ -137,9 +133,7 @@ Accelerometer.prototype._dataReady = function() {
     if (err) {
       // Emitting error
       self.emit('error', err);
-    }
-    // If there was no error
-    else {
+    } else {
       // Emit the data
       self.emit('data', xyz); // old-style, deprecated
       self.emit('sample', xyz);
@@ -205,8 +199,7 @@ Accelerometer.prototype._modeActive = function (callback) {
   self._readRegister(CTRL_REG1, function (err, c) {
     if (err) {
       return _failProcedure(err);
-    }
-    else {
+    } else {
       return self._writeRegister(CTRL_REG1, c | (0x01), callback);
     }
   });
@@ -219,8 +212,7 @@ Accelerometer.prototype._modeStandby = function (callback) {
   self._readRegister(CTRL_REG1, function (err, c) {
     if (err) {
       return self._failProcedure(err, callback);
-    }
-    else {
+    } else {
       return self._writeRegister(CTRL_REG1, c & ~(0x01), callback);
     }
   });
@@ -253,8 +245,7 @@ Accelerometer.prototype._unsafeSetScaleRange = function(scaleRange, callback) {
   self._changeRegister(function change(complete) {
     if (err) {
       return complete(err);
-    }
-    else {
+    } else {
       // Write the new scale into the register
       self._writeRegister(XYZ_DATA_CFG, fsr, function wroteReg(err) {
         self.scaleRange = scaleRange;
@@ -267,7 +258,7 @@ Accelerometer.prototype._unsafeSetScaleRange = function(scaleRange, callback) {
     }
     setImmediate(self.queue.next);
   });
-}
+};
 
 // Sets the output rate of the data (1.56-800 Hz)
 Accelerometer.prototype._unsafeSetOutputRate = function (hz, callback) {
@@ -279,8 +270,7 @@ Accelerometer.prototype._unsafeSetOutputRate = function (hz, callback) {
     self._getClosestOutputRate(hz, function gotRequested(err, closest) {
       if (err) {
         return finishChange(new Error("Rate must be >= 1.56Hz"));
-      }
-      else {
+      } else {
         // Set our property
         self.outputRate = closest;
 
@@ -292,8 +282,7 @@ Accelerometer.prototype._unsafeSetOutputRate = function (hz, callback) {
           self._readRegister(CTRL_REG1, function readComplete(err, regVal) {
             if (err) {
               return finishChange(err);
-            }
-            else {
+            } else {
                // Clear the three bits of output rate control (0b11000111 = 199)
               regVal &= 199;
               // Move the binary rep into place (bits 3:5)
@@ -302,12 +291,11 @@ Accelerometer.prototype._unsafeSetOutputRate = function (hz, callback) {
               self._writeRegister(CTRL_REG1, regVal, finishChange);
             }
           });
-        }
-        else {
+        } else {
           return finishChange(new Error("Invalid output rate."));
         }
       }
-    })
+    });
   },
   function rateSet(err) {
     if (callback) {
@@ -346,8 +334,7 @@ Accelerometer.prototype.enableDataInterrupts = function(enable, callback) {
       self._readRegister(CTRL_REG4, function(err, reg4) {
         if (err) {
           return complete(err);
-        }
-        else {
+        } else {
           // If we are enabling, set first bit to 1, else 0
           var regVal = (enable ? (reg4 |= 1) : (reg4 &= ~1));
           // Write to the register
