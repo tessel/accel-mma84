@@ -17,7 +17,12 @@ accel.on('ready', function () {
       'y:', xyz[1].toFixed(2),
       'z:', xyz[2].toFixed(2));
   });
-
 });
 
-setInterval(function(){}, 20000);
+// If there is an error, log it
+accel.on('error', function (err) {
+	console.log('error connecting to module', err);
+});
+
+// Keep the process open
+setInterval(function () {}, 20000);
