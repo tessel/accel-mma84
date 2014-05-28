@@ -81,7 +81,7 @@ function Accelerometer (hardware, callback) {
       });
 
       // Set up an interrupt handler for data ready
-      self.dataInterrupt.watch('low', self._dataReady.bind(self));
+      self.dataInterrupt.once('low', self._dataReady.bind(self));
     });
   });
 
@@ -145,7 +145,7 @@ Accelerometer.prototype._dataReady = function() {
       self.emit('sample', xyz);
     }
 
-     self.dataInterrupt.watch('low', self._dataReady.bind(self));
+     self.dataInterrupt.once('low', self._dataReady.bind(self));
   });
 };
 

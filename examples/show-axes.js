@@ -12,9 +12,9 @@ var tessel = require('tessel');
 var accel = require('../').use(tessel.port['A']); // Replace '../' with 'accel-mma84' in your own code
 
 // Define vars
-var led1 = tessel.led[1].output();
-var led2 = tessel.led[2].output();
-var led3 = tessel.led[3].output();
+var led1 = tessel.led[0].output();
+var led2 = tessel.led[1].output();
+var led3 = tessel.led[2].output();
 
 var textOut = '';
 
