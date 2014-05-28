@@ -53,3 +53,7 @@ accel.on('ready', function(){
     console.log(textOut);
   });
 });
+
+accel.on('error', function(err){
+  console.log('Error:', err);
+});
