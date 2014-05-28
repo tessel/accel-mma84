@@ -11,7 +11,7 @@ var accel = require('../').use(tessel.port['A']); // Replace '../' with 'accel-m
 
 // Initialize the accelerometer.
 accel.on('ready', function () {
-	// Stream accelerometer data
+    // Stream accelerometer data
   accel.on('data', function (xyz) {
     console.log('x:', xyz[0].toFixed(2),
       'y:', xyz[1].toFixed(2),
@@ -20,4 +20,6 @@ accel.on('ready', function () {
 
 });
 
-setInterval(function(){}, 20000);
+accel.on('error', function(err){
+  console.log('Error:', err);
+});

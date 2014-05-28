@@ -34,4 +34,6 @@ accel.on('ready', function () {
   }, 2000);
 });
 
-setInterval(function() {}, 20000);
+accel.on('error', function(err){
+  console.log('Error:', err);
+});

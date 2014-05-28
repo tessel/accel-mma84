@@ -43,7 +43,7 @@ function Accelerometer (hardware, callback) {
   self.queue.place(function one() {
     self._getChipID(function IDRead(err, c) {
       if (err) {
-        // Fail the init
+        err = new Error("Could not connect to MMA8452Q. No reponse on I2C lines. Error: "+err);
         return self._failProcedure(err);
       }
       // should always return 0x2A
