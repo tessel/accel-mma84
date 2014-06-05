@@ -1,7 +1,7 @@
 #Accelerometer
-Driver for the accel-mma84 Tessel accelerometer module. The hardware documentation for this module can be found [here](https://github.com/tessel/servo-pca9685.git). 
+Driver for the accel-mma84 Tessel accelerometer module. The hardware documentation for this module can be found [here](https://github.com/tessel/hardware/blob/master/modules-overview.md#accelerometer). 
 
-If you run into any issues you can ask for support on the [Relay Module Forums](http://forums.tessel.io/category/accelerometer).
+If you run into any issues you can ask for support on the [Accelerometer Module Forums](http://forums.tessel.io/category/accelerometer).
 
 ###Installation
 ```sh
@@ -60,5 +60,4 @@ accel.on('error', function(err){
 * [Show Axes](https://github.com/tessel/accel-mma84/blob/master/examples/show-axes.js). Demonstrates axes by turning on a different LED per axis (x, y, z) only when that axis has positive acceleration. Also prints +/- per axis to the console.
 
 ###License
-MIT
-APACHE
+MIT or Apache 2.0, at your option
