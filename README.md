@@ -67,3 +67,6 @@ Sets the accelerometer to read up to 2, 4, or 8 Gs of acceleration (smaller rang
 ###Further Examples
 * [Change Rates](https://github.com/tessel/accel-mma84/blob/master/examples/change-rates.js). This more advanced accelerometer example logs a stream of x, y, and z data, then stops the stream, changes the polling rate, and resumes streaming from the accelerometer.
 * [Show Axes](https://github.com/tessel/accel-mma84/blob/master/examples/show-axes.js). Demonstrates axes by turning on a different LED per axis (x, y, z) only when that axis has positive acceleration. Also prints +/- per axis to the console.
+
+###Licensing  
+MIT or Apache 2.0, at your option
