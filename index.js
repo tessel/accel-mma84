@@ -267,7 +267,7 @@ Accelerometer.prototype._unsafeSetScaleRange = function(scaleRange, callback) {
     }
     setImmediate(self.queue.next);
   });
-}
+};
 
 // Sets the output rate of the data (1.56-800 Hz)
 Accelerometer.prototype._unsafeSetOutputRate = function (hz, callback) {
@@ -307,7 +307,7 @@ Accelerometer.prototype._unsafeSetOutputRate = function (hz, callback) {
           return finishChange(new Error("Invalid output rate."));
         }
       }
-    })
+    });
   },
   function rateSet(err) {
     if (callback) {
