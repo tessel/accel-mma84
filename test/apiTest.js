@@ -91,7 +91,9 @@ setTimeout(function () {
 //getAcceleration
 accel.getAcceleration(function (err, data) {
   // Make sure there's no error
-  assert(!err, 'error in getAcceleration');
+  if(err) {
+    assert(false, 'error caught: ' + err);
+  }
   // Check the data to make sure it's valid
   checkValidAccelData(data);  
 });
@@ -102,6 +104,9 @@ async.eachSeries(accel.availableOutputRates(), function (rate, callback) {
   // Function completes in a reasonable amount of time
   var aboutToSet = new Date(milliseconds);
   accel.setOutputRate(rate, function (err) {
+    if(err) {
+      assert(false, 'error caught: ' + err);
+    }
     var justSet = new Date(milliseconds);
     assert(justSet - aboutToSet < 900, 'timed out setting output rate ' + rate);
     // New output rate matches the requested output rate (10% tolerance)
@@ -137,9 +142,15 @@ async.eachSeries(accel.availableScaleRanges(), function (range, callback) {
   // Function completes in a reasonable amount of time
   var aboutToSet = new Date(milliseconds);
   accel.setScaleRange(range, function (err) {
+    if(err) {
+      assert(false, 'error caught: ' + err);
+    }
     var justSet = new Date(milliseconds);
     assert(justSet - aboutToSet < 300, 'timed out setting output rate ' + range);
     accel.getAcceleration(function (err, data) {
+      if(err) {
+        assert(false, 'error caught: ' + err);
+      }
       collector[range] = data;
       callback();
     });
