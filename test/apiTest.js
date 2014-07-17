@@ -44,7 +44,7 @@ var rates = accel.availableOutputRates();
 assert(rates.length > 0, 'returned value from availableOutputRates has no length');
 // The things in the returned array are numbers
 rates.forEach(function (val) {
-  assert((typeof val) == 'number', 'value ' + val + 'is not a number');
+  assert((typeof val) == 'number', 'value ' + val + ' is not a number');
 });
 
 //availableScaleRanges()
@@ -53,7 +53,7 @@ var rates = accel.availableOutputRates();
 assert(rates.length > 0, 'returned value from availableScaleRanges has no length');
 // The things in the returned array are numbers
 rates.forEach(function (val) {
-  assert((typeof val) == 'number', 'value ' + val + 'is not a number');
+  assert((typeof val) == 'number', 'value ' + val + ' is not a number');
 });
 
 //enableDataInterrupts
@@ -114,9 +114,9 @@ async.eachSeries(accel.availableOutputRates(), function (rate, callback) {
       if(count) { // Check the first few data points
         freq = 1000/(thisTime - lastTime);
         if(rate > 12.5) {
-          assert(freq > 11, 'rate ' + rate + 'Hz failed, measured frequency ' + freq + 'Hz'); // WORKAROUND: this is sucky but on current firmware this is about as fast as it can go
+          assert(freq > 11, 'rate ' + rate + 'Hz failed, measured frequency ' + freq + ' Hz'); // WORKAROUND: this is sucky but on current firmware this is about as fast as it can go
         } else {
-          assert(freq < (rate * 1.1) && freq > (rate * 0.9), 'rate ' + rate + 'Hz failed, measured frequency ' + freq + 'Hz');
+          assert(freq < (rate * 1.1) && freq > (rate * 0.9), 'rate ' + rate + ' Hz failed, measured frequency ' + freq + ' Hz');
         }
       }
       lastTime = thisTime;
@@ -151,7 +151,7 @@ async.eachSeries(accel.availableScaleRanges(), function (range, callback) {
   ranges.forEach(function (range) {
     proportion = range / baseline;
     collector[baseline].forEach(function (datum, index) {
-      assert(collector[range][index] / datum == proportion, 'error setting range to ' + range + 'Gs; unexpected output');
+      assert(collector[range][index] / datum == proportion, 'error setting range to ' + range + ' Gs; unexpected output');
     });
   });
 });
@@ -161,6 +161,6 @@ function checkValidAccelData(dataArray) {
   assert(dataArray.length == 3, 'there should be three values in an accelerometer reading');
   // The three things in data are numbers
   dataArray.forEach(function (val) {
-    assert((typeof val) == 'number', 'value ' + val + 'should be a number');
+    assert((typeof val) == 'number', 'value ' + val + ' should be a number');
   });
 }
