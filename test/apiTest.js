@@ -26,6 +26,7 @@ assert(requireTime - startTime < 500, 'timed out requiring accel-mma84');
         // Check the data to make sure it's valid
         checkValidAccelData(data);
         firstData = false;
+        accel.removeAllListeners('data');
       }
     });
   });
