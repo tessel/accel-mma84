@@ -4,10 +4,9 @@
   "description": "Library to run the MMA8452Q accelerometer.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -e 'tessel run {} ${ACCEL_PORT}' test/*.js"
+    "test": "tinytap -e 'tessel run {} ${ACCEL_PORT}' test/*.js"
   },
   "dependencies": {
-    "mocha": "^1.20.1",
     "sync-queue": "0.0.1",
     "tinytap": "^0.1.0",
     "ttt": "^1.0.3"
