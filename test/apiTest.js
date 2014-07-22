@@ -15,11 +15,46 @@ async.series([
     accel = accelLib.use(tessel.port[portname], function (err, accel) {
       t.ok(accel, 'The accelerometer module object was not returned');
       t.equal(err, undefined, 'There was an error connecting');
-      t.end();
+      // Test events
+      var timeout = 1000;
+      //ready
+      var readyTimer = setTimeout(function () {
+        t.ok(false, 'Failed to emit ready event in a reasonable amount of time.');
+        t.end();
+      }, timeout);
+      accel.on('ready', function() {
+        clearTimeout(readyTimer);
+        t.ok(true, 'ready was emitted');
+        //data
+        var dataTimer = setTimeout(function () {
+          t.ok(false, 'Failed to emit data event in a reasonable amount of time.');
+          t.end();
+        }, timeout);
+        accel.on('data', function(data) {
+          clearTimeout(dataTimer);
+          t.ok(true, 'data was emitted')
+          // Check the data to make sure it's valid
+          // Data has length 3
+          t.ok(data.length == 3, 'there should be three values in an accelerometer reading');
+          // The three things in data are numbers
+          data.forEach(function (val, index) {
+            t.ok((typeof val) == 'number', 'value ' + val + ' should be a number');
+            if(index == (data.length - 1)) {
+              t.end();
+            }
+          });
+        });
+      });
+      //error
+      // Fail if we get an error
+      accel.on('error', function (err) {
+        t.ok(false, 'error caught: ' + err);
+        t.end();
+      });
     });
   }),
   
-  // //***Methods***//
+  // Test methods
   test('availableOutputRates', function (t) {
     var rates = accel.availableOutputRates();
     // Return value has a length
@@ -175,49 +210,6 @@ async.series([
     });
   })
 
-  
-  // // Test events
-  // test('accelerometer module events', function (t) {
-  //   test('we are here', function (t2) {
-  //     t2.ok(true);
-  //     t2.end();
-  //   });
-  //   //ready
-  //   // It calls ready within a reasonable amount of time
-  //   accel.on('ready', function() {
-  //     // var readyTime = new Date(milliseconds);
-  //     t.ok(readyTime - requireTime < 500, 'timed out waiting for ready event');
-  //     //data
-  //     // It gets data within a reasonable amount of time
-  //     var firstData = true;
-  //     accel.on('data', function(data) {
-  //       if(firstData) {
-  //         // var dataTime = new Date(milliseconds);
-  //         // t.ok(dataTime - readyTime < 300, 'timed out waiting for initial data');
-  //         // Check the data to make sure it's valid
-  //         test('check valid data', function(firstData) {
-  //           // Data has length 3
-  //           t.ok(data.length == 3, 'there should be three values in an accelerometer reading');
-  //           // The three things in data are numbers
-  //           data.forEach(function (val, index) {
-  //             t.ok((typeof val) == 'number', 'value ' + val + ' should be a number');
-  //             if(index == data.length) {
-  //               t.end();
-  //             }
-  //           });
-  //         });
-  //         firstData = false;
-  //         accel.removeAllListeners('data');
-  //         t.end();
-  //       }
-  //     });
-  //   });
-    // // //error
-    // //   // Fail if we get an error
-    // //   accel.on('error', function (err) {
-    // //     t.ok(false, 'error caught: ' + err);
-    // //   });
-  // })
   ], function (err) {
     console.log('error running tests', err);
 });
