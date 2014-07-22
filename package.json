@@ -7,7 +7,9 @@
     "test": "tinytap -e 'tessel run {} ${ACCEL_PORT}' test/*.js"
   },
   "dependencies": {
-    "sync-queue": "0.0.1"
+    "sync-queue": "0.0.1",
+    "tinytap": "^0.1.0",
+    "ttt": "^1.0.3"
   },
   "hardware": {
     "./examples": false
