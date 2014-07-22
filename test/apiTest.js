@@ -1,4 +1,4 @@
-var test = require('ttt');
+var test = require('tinytap');
 
 var assert = require('assert');
 var async = require('async');
@@ -9,7 +9,7 @@ var portname = process.argv[2] || 'A';
 var requireTime = new Date(milliseconds);
 var accel;
 
-console.log('1..42')
+test.count(42);
 
 async.series([
   // Test connecting
