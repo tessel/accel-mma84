@@ -2,12 +2,14 @@ var test = require('ttt');
 
 var assert = require('assert');
 var async = require('async');
-
-var portname = process.argv[2] || 'A';
 var tessel = require('tessel');
 var accelLib = require('../');
+
+var portname = process.argv[2] || 'A';
 var requireTime = new Date(milliseconds);
 var accel;
+
+console.log('1..42')
 
 async.series([
   // Test connecting
