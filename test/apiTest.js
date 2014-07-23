@@ -32,7 +32,7 @@ async.series([
         }, timeout);
         accel.on('data', function(data) {
           clearTimeout(dataTimer);
-          t.ok(true, 'data was emitted')
+          t.ok(true, 'data was emitted');
           // Check the data to make sure it's valid
           // Data has length 3
           t.ok(data.length == 3, 'there should be three values in an accelerometer reading');
