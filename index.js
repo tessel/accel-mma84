@@ -89,7 +89,7 @@ function Accelerometer (hardware, callback) {
     // If we have a new sample listener
     if (event == 'data' || event == 'sample') {
       // Enable interrupts at whatever rate was previously set.
-      self.enableDataInterrupts(true, queueNext);
+      self.enableDataInterrupts(true, self.queue.next);
     }
   });
 
@@ -97,7 +97,7 @@ function Accelerometer (hardware, callback) {
     // If we have a new || event == 'sample' listener
     if (event == 'data' || event == 'sample') {
       // Disable interrupt.
-      self.enableDataInterrupts(false, queueNext);
+      self.enableDataInterrupts(false, self.queue.next);
     }
   });
 
