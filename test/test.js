@@ -14,6 +14,5 @@ test('sample count', function (t) {
     t.ok(typeof xyz[1] == 'number', 'idx 1 is number');
     t.ok(typeof xyz[2] == 'number', 'idx 2 is number');
     t.end();
-    accel.disable();
   });
 });
