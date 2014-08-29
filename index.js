@@ -89,7 +89,7 @@ function Accelerometer (hardware, callback) {
     // If we have a new sample listener
     if (event == 'data' || event == 'sample') {
       // Enable interrupts at whatever rate was previously set.
-      self.enableDataInterrupts(true, queueNext);
+      self.enableDataInterrupts(true, self.queue.next);
     }
   });
 
@@ -97,7 +97,7 @@ function Accelerometer (hardware, callback) {
     // If we have a new || event == 'sample' listener
     if (event == 'data' || event == 'sample') {
       // Disable interrupt.
-      self.enableDataInterrupts(false, queueNext);
+      self.enableDataInterrupts(false, self.queue.next);
     }
   });
 
@@ -250,17 +250,14 @@ Accelerometer.prototype._unsafeSetScaleRange = function(scaleRange, callback) {
   fsr >>= 2; // Neat trick, see page 22. 00 = 2G, 01 = 4G, 10 = 8G
 
   // Go into standby to edit registers
-  self._changeRegister(function change(complete) {
-    if (err) {
-      return complete(err);
-    }
-    else {
-      // Write the new scale into the register
-      self._writeRegister(XYZ_DATA_CFG, fsr, function wroteReg(err) {
-        self.scaleRange = scaleRange;
-        return complete(err);
-      });
-    }
+  self._changeRegister(function change(changeComplete) {
+
+    // Write the new scale into the register
+    self._writeRegister(XYZ_DATA_CFG, fsr, function wroteReg(err) {
+      self.scaleRange = scaleRange;
+      return changeComplete(err);
+    });
+    
   }, function scaleSet(err) {
     if (callback) {
       callback(err);

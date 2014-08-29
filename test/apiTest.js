@@ -9,7 +9,7 @@ var portname = process.argv[2] || 'A';
 var requireTime = new Date(milliseconds);
 var accel;
 
-test.count(42);
+test.count(41);
 
 async.series([
   // Test connecting
