@@ -43,7 +43,7 @@ function Accelerometer (hardware, callback) {
   self.queue.place(function one() {
     self._getChipID(function IDRead(err, c) {
       if (err) {
-        err = new Error("Could not connect to MMA8452Q. No reponse on I2C lines. Error: "+err);
+        err = new Error("Could not connect to MMA8452Q. No response on I2C lines. Error: "+err);
         return self._failProcedure(err);
       }
       // should always return 0x2A
@@ -88,7 +88,7 @@ function Accelerometer (hardware, callback) {
   self.on('newListener', function(event) {
     // If we have a new sample listener
     if (event == 'data' || event == 'sample') {
-      // Enable interrupts at whatever rate was previously set.
+      // Enable interrupts at whatever rate was previously set
       self.enableDataInterrupts(true, self.queue.next);
     }
   });
