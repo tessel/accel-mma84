@@ -40,10 +40,8 @@ test('Connecting to accelerometer module', function (t) {
         // The three things in data are numbers
         data.forEach(function (val, index) {
           t.ok((typeof val) == 'number', 'value ' + val + ' should be a number');
-          if(index == (data.length - 1)) {
-            t.end();
-          }
         });
+        t.end();
       });
     });
     //error
@@ -63,10 +61,8 @@ test('availableOutputRates', function (t) {
   // The things in the returned array are numbers
   rates.forEach(function (val, index) {
     t.equal(typeof val, 'number', 'value ' + val + ' is not a number');
-    if(index == (rates.length - 1)) {
-      t.end();
-    }
   });
+  t.end();
 })
 
 test('availableScaleRanges', function (t) {
@@ -76,10 +72,8 @@ test('availableScaleRanges', function (t) {
   // The things in the returned array are numbers
   ranges.forEach(function (val, index) {
     t.equal((typeof val), 'number', 'value ' + val + ' is not a number');
-        if(index == (ranges.length - 1)) {
-    t.end();
-    }
   });
+  t.end();
 })
 
 test('enableDataInterrupts', function (t) {
@@ -128,10 +122,8 @@ test('getAcceleration', function (t) {
     // The three things in data are numbers
     data.forEach(function (val, index) {
       t.ok((typeof val) == 'number', 'value ' + val + ' should be a number');
-      if(index == (data.length - 1)) {
-        t.end();
-      }
     });
+    t.end();
   });
 })
 
@@ -204,9 +196,7 @@ test('setScaleRange', function (t) {
       collector[baseline].forEach(function (datum, index) {
         t.ok(collector[range][index] / datum == proportion, 'error setting range to ' + range + ' Gs; unexpected output');
       });
-      if(index == (ranges.length - 1)) {
-        t.end();
-      }
     });
+    t.end();
   });
 })
