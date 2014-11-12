@@ -8,7 +8,7 @@ var tessel = require('tessel');
 var accelLib = require('../');
 
 var portname = process.argv[2] || 'A';
-var requireTime = new Date(milliseconds);
+var requireTime = new Date();
 var accel;
 
 // Test connecting
@@ -131,7 +131,7 @@ test('getAcceleration', function (t) {
       if(index == (data.length - 1)) {
         t.end();
       }
-    }); 
+    });
   });
 })
 
@@ -139,12 +139,12 @@ test('setOutputRate', function (t) {
   // Check for all available output rates
   async.eachSeries(accel.availableOutputRates(), function (rate, callback) {
     // Function completes in a reasonable amount of time
-    var aboutToSet = new Date(milliseconds);
+    var aboutToSet = new Date();
     accel.setOutputRate(rate, function (err) {
       if(err) {
         t.ok(false, 'error caught: ' + err);
       }
-      var justSet = new Date(milliseconds);
+      var justSet = new Date();
       t.ok(justSet - aboutToSet < 900, 'took too long to set output rate ' + rate);
       // New output rate matches the requested output rate (10% tolerance)
       var count = 0;
@@ -152,7 +152,7 @@ test('setOutputRate', function (t) {
       var lastTime;
       var freq;
       accel.on('data', function (data) {
-        thisTime = new Date(milliseconds);
+        thisTime = new Date();
         if(count) { // Check the first few data points
           freq = 1000/(thisTime - lastTime);
           if(rate > 12.5) {
@@ -174,18 +174,18 @@ test('setOutputRate', function (t) {
   });
 })
 
-test('setScaleRange', function (t) {  
+test('setScaleRange', function (t) {
   // Check for all available scale ranges
   var ranges = accel.availableScaleRanges();
   var collector = {};
   async.eachSeries(accel.availableScaleRanges(), function (range, callback) {
     // Function completes in a reasonable amount of time
-    var aboutToSet = new Date(milliseconds);
+    var aboutToSet = new Date();
     accel.setScaleRange(range, function (err) {
       if(err) {
         t.ok(false, 'error caught: ' + err);
       }
-      var justSet = new Date(milliseconds);
+      var justSet = new Date();
       t.ok(justSet - aboutToSet < 300, 'timed out setting output rate ' + range);
       accel.getAcceleration(function (err, data) {
         if(err) {
