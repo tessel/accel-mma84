@@ -257,7 +257,7 @@ Accelerometer.prototype._unsafeSetScaleRange = function(scaleRange, callback) {
       self.scaleRange = scaleRange;
       return changeComplete(err);
     });
-    
+
   }, function scaleSet(err) {
     if (callback) {
       callback(err);
@@ -330,13 +330,14 @@ Accelerometer.prototype.availableScaleRanges = function() {
 Accelerometer.prototype.enableDataInterrupts = function(enable, callback) {
   var self = this;
 
-  // Don't call unnecessarily.
-  if (this._dataInterrupts == !!enable) {
-    return callback && callback();
-  }
-  this._dataInterrupts = !!enable;
-
   self.queue.place(function queueEnable() {
+    // Don't call unnecessarily.
+    if (self._dataInterrupts == !!enable) {
+      setImmediate(self.queue.next);
+      return callback && callback();
+    }
+    self._dataInterrupts = !!enable;
+
     // We're going to change register 4
     self._changeRegister(function change(complete) {
       // Read the register first
