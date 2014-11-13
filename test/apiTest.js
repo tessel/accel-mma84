@@ -1,6 +1,6 @@
 var test = require('tinytap');
 
-test.count(41);
+test.count(28);
 
 var assert = require('assert');
 var async = require('async');
@@ -122,80 +122,6 @@ test('getAcceleration', function (t) {
     // The three things in data are numbers
     data.forEach(function (val, index) {
       t.ok((typeof val) == 'number', 'value ' + val + ' should be a number');
-    });
-    t.end();
-  });
-})
-
-test('setOutputRate', function (t) {
-  // Check for all available output rates
-  async.eachSeries(accel.availableOutputRates(), function (rate, callback) {
-    // Function completes in a reasonable amount of time
-    var aboutToSet = new Date();
-    accel.setOutputRate(rate, function (err) {
-      if(err) {
-        t.ok(false, 'error caught: ' + err);
-      }
-      var justSet = new Date();
-      t.ok(justSet - aboutToSet < 900, 'took too long to set output rate ' + rate);
-      // New output rate matches the requested output rate (10% tolerance)
-      var count = 0;
-      var thisTime;
-      var lastTime;
-      var freq;
-      accel.on('data', function (data) {
-        thisTime = new Date();
-        if(count) { // Check the first few data points
-          freq = 1000/(thisTime - lastTime);
-          if(rate > 12.5) {
-            t.ok(freq > 11, 'rate ' + rate + 'Hz failed, measured frequency ' + freq + ' Hz'); // WORKAROUND: this is sucky but on current firmware this is about as fast as it can go
-          } else {
-            t.ok(freq < (rate * 1.1) && freq > (rate * 0.9), 'rate ' + rate + ' Hz failed, measured frequency ' + freq + ' Hz');
-          }
-        }
-        lastTime = thisTime;
-        count ++;
-        if(count > 6) {
-          accel.removeAllListeners('data');
-          callback();
-        }
-      });
-    });
-  }, function () {
-    t.end();
-  });
-})
-
-test('setScaleRange', function (t) {
-  // Check for all available scale ranges
-  var ranges = accel.availableScaleRanges();
-  var collector = {};
-  async.eachSeries(accel.availableScaleRanges(), function (range, callback) {
-    // Function completes in a reasonable amount of time
-    var aboutToSet = new Date();
-    accel.setScaleRange(range, function (err) {
-      if(err) {
-        t.ok(false, 'error caught: ' + err);
-      }
-      var justSet = new Date();
-      t.ok(justSet - aboutToSet < 300, 'timed out setting output rate ' + range);
-      accel.getAcceleration(function (err, data) {
-        if(err) {
-          t.ok(false, 'error caught: ' + err);
-        }
-        collector[range] = data;
-        callback();
-      });
-    });
-  }, function () {
-    // Make sure the different settings are proportionally accurate
-    baseline = ranges[0];
-    var proportion;
-    ranges.forEach(function (range, index) {
-      proportion = range / baseline;
-      collector[baseline].forEach(function (datum, index) {
-        t.ok(collector[range][index] / datum == proportion, 'error setting range to ' + range + ' Gs; unexpected output');
-      });
     });
     t.end();
   });
