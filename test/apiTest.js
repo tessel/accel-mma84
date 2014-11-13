@@ -31,7 +31,7 @@ test('Connecting to accelerometer module', function (t) {
         t.ok(false, 'Failed to emit data event in a reasonable amount of time.');
         t.end();
       }, timeout);
-      accel.on('data', function(data) {
+      accel.once('data', function(data) {
         clearTimeout(dataTimer);
         t.ok(true, 'data was emitted');
         // Check the data to make sure it's valid
