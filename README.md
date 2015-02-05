@@ -43,7 +43,7 @@ accel.on('error', function(err){
 Logs the available accelerometer ranges (in units of Gs).  
 
 &#x20;<a href="#api-accel-enableDataInterrupts-trueOrFalse-callback-err-Enables-or-disables-data-interrupts-Set-the-first-param-truthy-to-enable-falsy-to-disable" name="api-accel-enableDataInterrupts-trueOrFalse-callback-err-Enables-or-disables-data-interrupts-Set-the-first-param-truthy-to-enable-falsy-to-disable">#</a> accel<b>.enableDataInterrupts</b>( trueOrFalse, callback(err) )  
- Enables or disables data interrupts. Set the first param truthy to enable, falsy to disable.  
+ Enables or disables data interrupts, and thus, `data` events. Set the first param truthy to enable, falsy to disable.  
 
 &#x20;<a href="#api-accel-getAcceleration-callback-err-xyz-Gets-the-acceleration-from-the-device-outputs-as-array-x-y-z" name="api-accel-getAcceleration-callback-err-xyz-Gets-the-acceleration-from-the-device-outputs-as-array-x-y-z">#</a> accel<b>.getAcceleration</b>( callback(err, xyz) )  
  Gets the acceleration from the device, outputs as array [x, y, z].  
