@@ -7,7 +7,7 @@
     "test": "tinytap -e 'tessel run {} ${ACCEL_PORT}' test/*.js"
   },
   "dependencies": {
-    "sync-queue": "0.0.1"
+    "sync-queue": "0.0.2"
   },
   "hardware": {
     "./examples": false
@@ -16,7 +16,7 @@
   "author": "Tim Cameron Ryan <tim@timryan.org>",
   "license": "MIT",
   "devDependencies": {
-    "async": "^0.9.0",
-    "tinytap": "^0.2.0"
+    "async": "^2.5.0",
+    "tinytap": "^1.2.2"
   }
 }
